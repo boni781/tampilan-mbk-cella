@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Dashboard PMO Benih KBDD/KBDI</title>
+
+<style>
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:Segoe UI,Arial,sans-serif;
+}
+
+body{
+background:#f4f6f9;
+padding:30px;
+color:#2c3e50;
+}
+
+.container{
+max-width:1700px;
+margin:auto;
+}
+
+/* HEADER */
+
+header{
+display:flex;
+justify-content:space-between;
+align-items:center;
+margin-bottom:30px;
+}
+
+header h1{
+font-size:34px;
+margin-bottom:5px;
+}
+
+header p{
+color:#777;
+}
+
+.filter{
+display:flex;
+gap:15px;
+}
+
+select{
+padding:12px 18px;
+border-radius:10px;
+border:1px solid #ddd;
+background:white;
+cursor:pointer;
+}
+
+/* SUMMARY */
+
+.summary{
+display:grid;
+grid-template-columns:repeat(7,1fr);
+gap:18px;
+margin-bottom:30px;
+}
+
+.card{
+background:white;
+padding:20px;
+border-radius:18px;
+box-shadow:0 5px 20px rgba(0,0,0,.08);
+transition:.3s;
+}
+
+.card:hover{
+transform:translateY(-5px);
+}
+
+.card h3{
+font-size:15px;
+color:#666;
+}
+
+.card h1{
+margin:12px 0;
+font-size:30px;
+}
+
+.card p{
+font-size:14px;
+color:#888;
+}
+
+.border-blue{border-top:5px solid #3498db;}
+.border-green{border-top:5px solid #2ecc71;}
+.border-yellow{border-top:5px solid #f1c40f;}
+.border-purple{border-top:5px solid #8e44ad;}
+.border-orange{border-top:5px solid #e67e22;}
+.border-red{border-top:5px solid #e74c3c;}
+.border-dark{border-top:5px solid #34495e;}
+
+/* WORKFLOW */
+
+.workflow{
+background:white;
+padding:25px;
+border-radius:20px;
+margin-bottom:30px;
+box-shadow:0 5px 20px rgba(0,0,0,.08);
+}
+
+.workflow h2{
+margin-bottom:25px;
+}
+
+.flow{
+display:flex;
+justify-content:space-between;
+align-items:center;
+}
+
+.step{
+background:#eef3f8;
+padding:20px;
+border-radius:15px;
+width:180px;
+text-align:center;
+font-weight:bold;
+}
+
+.step span{
+display:block;
+font-size:28px;
+margin-top:10px;
+color:#2c3e50;
+}
+
+.arrow{
+font-size:36px;
+color:#888;
+}
+
+/* PRIORITAS */
+
+.middle{
+display:grid;
+grid-template-columns:1fr 1fr;
+gap:25px;
+margin-bottom:30px;
+}
+
+.priority,
+.alert{
+background:white;
+padding:25px;
+border-radius:20px;
+box-shadow:0 5px 20px rgba(0,0,0,.08);
+}
+
+.priority h2,
+.alert h2{
+margin-bottom:20px;
+}
+
+.priority ul{
+list-style:none;
+}
+
+.priority li{
+padding:14px;
+margin-bottom:10px;
+background:#f7f8fa;
+border-radius:10px;
+}
+
+/* ALERT */
+
+.alert-box{
+display:flex;
+justify-content:space-between;
+padding:15px;
+margin-bottom:12px;
+border-radius:12px;
+font-weight:bold;
+}
+
+.bg-red{
+background:#fdecea;
+color:#b71c1c;
+}
+
+.bg-orange{
+background:#fff4e5;
+color:#d35400;
+}
+
+.bg-yellow{
+background:#fff8e1;
+color:#b7950b;
+}
+
+.bg-green{
+background:#e8f8f0;
+color:#1e8449;
+}
+
+/* CHART */
+
+.chart{
+display:grid;
+grid-template-columns:2fr 1fr;
+gap:25px;
+margin-bottom:30px;
+}
+
+.chart-box{
+background:white;
+padding:20px;
+border-radius:20px;
+box-shadow:0 5px 20px rgba(0,0,0,.08);
+}
+
+.placeholder{
+height:320px;
+display:flex;
+justify-content:center;
+align-items:center;
+border:3px dashed #ccc;
+margin-top:20px;
+border-radius:15px;
+font-size:20px;
+color:#999;
+}
+
+/* TABLE */
+
+.table-section{
+background:white;
+padding:25px;
+border-radius:20px;
+box-shadow:0 5px 20px rgba(0,0,0,.08);
+}
+
+table{
+width:100%;
+border-collapse:collapse;
+margin-top:20px;
+}
+
+th{
+background:#34495e;
+color:white;
+padding:15px;
+}
+
+td{
+padding:14px;
+border-bottom:1px solid #eee;
+}
+
+tbody tr:hover{
+background:#f9fbfc;
+}
+
+.danger{
+color:red;
+font-weight:bold;
+}
+
+@media(max-width:1200px){
+
+.summary{
+grid-template-columns:repeat(2,1fr);
+}
+
+.flow{
+flex-wrap:wrap;
+gap:20px;
+justify-content:center;
+}
+
+.arrow{
+display:none;
+}
+
+.chart,
+.middle{
+grid-template-columns:1fr;
+}
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+<header>
+
+<div>
+
+<h1>Dashboard PMO Benih KBDD / KBDI</h1>
+
+<p>Monitoring Workflow Sertifikasi Benih</p>
+
+</div>
+
+<div class="filter">
+
+<select>
+<option>Semua Kabupaten</option>
+</select>
+
+<select>
+<option>Tahun 2026</option>
+</select>
+
+</div>
+
+</header>
+
+<section class="summary">
+
+<div class="card border-dark">
+<h3>Total Benih</h3>
+<h1>2.450 Ha</h1>
+<p>1.820 Petak</p>
+</div>
+
+<div class="card border-blue">
+<h3>Siap Sertifikasi</h3>
+<h1>315 Ha</h1>
+<p>120 Petak</p>
+</div>
+
+<div class="card border-green">
+<h3>Sudah Sertifikasi</h3>
+<h1>1.420 Ha</h1>
+<p>980 Petak</p>
+</div>
+
+<div class="card border-yellow">
+<h3>Label Terbit</h3>
+<h1>1.210 Ha</h1>
+<p>845 Petak</p>
+</div>
+
+<div class="card border-purple">
+<h3>Sudah Disalurkan</h3>
+<h1>970 Ha</h1>
+<p>710 Petak</p>
+</div>
+
+<div class="card border-orange">
+<h3>Hampir Expired</h3>
+<h1>56 Ha</h1>
+<p>14 Hari Lagi</p>
+</div>
+
+<div class="card border-red">
+<h3>Expired</h3>
+<h1>18 Ha</h1>
+<p>Perlu Evaluasi</p>
+</div>
+
+</section>
+
+<section class="workflow">
+
+<h2>Workflow Sertifikasi</h2>
+
+<div class="flow">
+
+<div class="step">Monitoring<span>320 Ha</span></div>
+
+<div class="arrow">➜</div>
+
+<div class="step">Siap Sertifikasi<span>180 Ha</span></div>
+
+<div class="arrow">➜</div>
+
+<div class="step">Sudah Sertifikasi<span>145 Ha</span></div>
+
+<div class="arrow">➜</div>
+
+<div class="step">Label Terbit<span>120 Ha</span></div>
+
+<div class="arrow">➜</div>
+
+<div class="step">Sudah Disalurkan<span>98 Ha</span></div>
+
+</div>
+
+</section>
+
+<section class="middle">
+
+<div class="priority">
+
+<h2>Prioritas Hari Ini</h2>
+
+<ul>
+
+<li>🔴 Umur >180 hari belum diajukan sertifikasi</li>
+
+<li>🟠 Sudah sertifikasi tetapi label belum terbit</li>
+
+<li>🟡 Label sudah terbit namun belum disalurkan</li>
+
+<li>🟢 Benih siap didistribusikan ke CPCL</li>
+
+</ul>
+
+</div>
+
+<div class="alert">
+
+<h2>Alert Center</h2>
+
+<div class="alert-box bg-red">
+<span>Expired</span>
+<span>18 Ha</span>
+</div>
+
+<div class="alert-box bg-orange">
+<span>Hampir Expired</span>
+<span>56 Ha</span>
+</div>
+
+<div class="alert-box bg-yellow">
+<span>Belum Terbit Label</span>
+<span>120 Ha</span>
+</div>
+
+<div class="alert-box bg-green">
+<span>Siap Disalurkan</span>
+<span>98 Ha</span>
+</div>
+
+</div>
+
+</section>
+
+<section class="chart">
+
+<div class="chart-box">
+
+<h2>Progress Workflow</h2>
+
+<div class="placeholder">
+
+📈 Area Grafik Progress
+
+</div>
+
+</div>
+
+<div class="chart-box">
+
+<h2>Kabupaten Prioritas</h2>
+
+<div class="placeholder">
+
+📊 Area Grafik Kabupaten
+
+</div>
+
+</div>
+
+</section>
+
+<section class="table-section">
+
+<h2>Data Detail</h2>
+
+<table>
+
+<thead>
+
+<tr>
+
+<th>Kebun</th>
+<th>Desa</th>
+<th>Varietas</th>
+<th>Umur</th>
+<th>Sertifikasi</th>
+<th>Label</th>
+<th>Distribusi</th>
+<th>Sisa Hari</th>
+
+</tr>
+
+</thead>
+
+<tbody>
+
+<tr>
+
+<td>Arjasa</td>
+<td>Sukowono</td>
+<td>PSJT 941</td>
+<td>183 Hari</td>
+<td>✔</td>
+<td>❌</td>
+<td>❌</td>
+<td class="danger">12 Hari</td>
+
+</tr>
+
+<tr>
+
+<td>Asembagus</td>
+<td>Curahkalak</td>
+<td>PS 881</td>
+<td>170 Hari</td>
+<td>✔</td>
+<td>✔</td>
+<td>❌</td>
+<td>25 Hari</td>
+
+</tr>
+
+<tr>
+
+<td>Jatiroto</td>
+<td>Kedungrejo</td>
+<td>PSBM 901</td>
+<td>155 Hari</td>
+<td>❌</td>
+<td>-</td>
+<td>-</td>
+<td>45 Hari</td>
+
+</tr>
+
+</tbody>
+
+</table>
+
+</section>
+
+</div>
+
+</body>
+</html>
