@@ -1,0 +1,183 @@
+/* =====================================================
+   CONNECTION ERROR MODAL
+   ===================================================== */
+
+.connection-modal {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.55);
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    z-index: 99999;
+    padding: 20px;
+
+    animation: connectionFadeIn 0.2s ease;
+}
+
+
+/* =====================================================
+   BOX
+   ===================================================== */
+
+.connection-box {
+    width: min(420px, 100%);
+
+    background: #ffffff;
+
+    border-radius: 18px;
+
+    padding: 30px;
+
+    text-align: center;
+
+    box-shadow:
+        0 20px 60px rgba(0, 0, 0, 0.25);
+
+    animation: connectionPopup 0.25s ease;
+}
+
+
+/* =====================================================
+   ICON
+   ===================================================== */
+
+.connection-icon {
+    width: 65px;
+    height: 65px;
+
+    margin: 0 auto 18px;
+
+    border-radius: 50%;
+
+    background: #fff3cd;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    font-size: 32px;
+}
+
+
+/* =====================================================
+   TITLE
+   ===================================================== */
+
+.connection-box h2 {
+    margin: 0 0 12px;
+
+    color: #333333;
+
+    font-size: 22px;
+}
+
+
+/* =====================================================
+   MESSAGE
+   ===================================================== */
+
+.connection-box p {
+    margin: 0 0 24px;
+
+    color: #666666;
+
+    line-height: 1.6;
+
+    font-size: 14px;
+}
+
+
+/* =====================================================
+   BUTTON
+   ===================================================== */
+
+.connection-box button {
+    border: none;
+
+    background: #2563eb;
+
+    color: #ffffff;
+
+    padding: 11px 25px;
+
+    border-radius: 9px;
+
+    cursor: pointer;
+
+    font-size: 14px;
+
+    transition:
+        background 0.2s ease,
+        transform 0.2s ease;
+}
+
+.connection-box button:hover {
+    background: #1d4ed8;
+
+    transform: translateY(-1px);
+}
+
+
+/* =====================================================
+   ANIMATION
+   ===================================================== */
+
+@keyframes connectionFadeIn {
+
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+
+}
+
+
+@keyframes connectionPopup {
+
+    from {
+        opacity: 0;
+        transform: scale(0.9);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+
+}
+
+
+/* =====================================================
+   MOBILE
+   ===================================================== */
+
+@media (max-width: 480px) {
+
+    .connection-box {
+        padding: 24px;
+
+        border-radius: 15px;
+    }
+
+    .connection-icon {
+        width: 58px;
+        height: 58px;
+
+        font-size: 28px;
+    }
+
+    .connection-box h2 {
+        font-size: 19px;
+    }
+
+    .connection-box p {
+        font-size: 13px;
+    }
+
+}

@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard Builder</title>
+  <link
+    rel="stylesheet"
+    href="{{ url_for('static', filename='css/connection-error.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tom-select/dist/css/tom-select.css">
+</head>
+<body>
+  <main class="container">
+    <form id="builderForm" method="POST" action="{{ url_for('dashboard') }}">
+      <section class="load-section">
+        <h2>Load Google Spreadsheet</h2>
+        <div class="load-grid">
+          <label>Link Spreadsheet<input type="text" name="spreadsheet_url" placeholder="https://docs.google.com/spreadsheets/..." value="{{ config.spreadsheet_url }}"></label>
+          <label>Judul Dashboard<input type="text" name="dashboard_title" maxlength="100" placeholder="Contoh: Dashboard Monitoring Sertifikasi" value="{{ config.dashboard_title }}"></label>
+          <label>Worksheet<select name="worksheet_name"><option value="">-- Pilih Worksheet --</option>{% for sheet in config.sheet_names %}<option value="{{ sheet }}" {% if config.worksheet_name == sheet %}selected{% endif %}>{{ sheet }}</option>{% endfor %}</select></label>
+          <label>Header Mulai Baris<input type="number" min="1" name="header_row" value="{{ config.header_row }}"></label>
+          <label>&nbsp;<button type="submit" formaction="{{ url_for('builder') }}">Load Spreadsheet</button></label>
+        </div>
+      </section>
+
+      <header>
+        <div><h1>Dashboard Builder</h1><p>Konfigurasi Dashboard Google Spreadsheet</p></div>
+        <div class="header-status"><div>Header <b>{{ config.headers|length }}</b></div><div>Data <b>{{ config.data|length }}</b></div><div>Worksheet <b>{{ config.worksheet_name or '-' }}</b></div></div>
+      </header>
+
+      <section class="builder">
+        <h2>Pengaturan Dashboard</h2>
+        <p>Tentukan grafik dan data yang ingin dikecualikan.</p>
+        <div class="builder-grid">
+          <article class="builder-box">
+            <h3>Konfigurasi Grafik</h3>
+            <label>Header Sumbu X<select class="chart-select" name="chart_x"><option value="">-- Pilih Header --</option>{% for h in config.headers %}<option value="{{ h }}" {% if config.chart.x == h %}selected{% endif %}>{{ h }}</option>{% endfor %}</select></label>
+            <label>Header Sumbu Y<select class="chart-select" name="chart_y"><option value="">-- Pilih Header --</option>{% for h in config.headers %}<option value="{{ h }}" {% if config.chart.y == h %}selected{% endif %}>{{ h }}</option>{% endfor %}</select></label>
+            <label>Jenis Grafik<select class="chart-select" name="chart_type"><option value="bar" {% if config.chart.type == 'bar' %}selected{% endif %}>Bar</option><option value="line" {% if config.chart.type == 'line' %}selected{% endif %}>Line</option><option value="pie" {% if config.chart.type == 'pie' %}selected{% endif %}>Pie</option><option value="doughnut" {% if config.chart.type == 'doughnut' %}selected{% endif %}>Doughnut</option></select></label>
+          </article>
+
+          <article class="builder-box">
+            <h3>Pengecualian Data</h3>
+            <p>Pilih nilai tertentu, hapus satu/lebih baris, atau sembunyikan satu kolom dari dashboard.</p>
+            <div id="ruleContainer"></div>
+            <button type="button" id="addRule" class="btn-add">+ Tambah Rule</button>
+          </article>
+
+          <article class="builder-box">
+            <h3>Ringkasan</h3>
+            <table class="builder-info"><tr><td>Worksheet</td><td>{{ config.worksheet_name or '-' }}</td></tr><tr><td>Jumlah Header</td><td>{{ config.headers|length }}</td></tr><tr><td>Jumlah Data</td><td>{{ config.data|length }}</td></tr><tr><td>Header Row</td><td>{{ config.header_row }}</td></tr></table>
+          </article>
+        </div>
+      </section>
+
+      <div class="setting-button">
+        <input type="hidden" id="rules" name="rules">
+        <!-- Target bernama sama: update berikutnya menyegarkan tab dashboard yang sudah terbuka. -->
+        <button type="submit" class="btn-primary" formtarget="dashboardWindow">Update Dashboard</button>
+      </div>
+    </form>
+  </main>
+
+  <template id="ruleTemplate">
+    <article class="exclude-rule">
+      <div class="rule-header"><h4>Rule Pengecualian</h4><button type="button" class="remove-rule" aria-label="Hapus rule">×</button></div>
+      <label>Jenis Pengecualian
+        <select class="rule-mode">
+          <option value="values">Nilai tertentu dalam kolom</option>
+          <option value="rows">Baris tertentu</option>
+          <option value="column">Seluruh kolom</option>
+        </select>
+      </label>
+      <div class="rule-mode-fields mode-values">
+        <label>Header kolom
+          <div class="load-filter"><select class="rule-header-select"></select><button type="button" class="load-values">Load nilai</button></div>
+        </label>
+        <label>Nilai yang dikecualikan<select class="rule-value-select" multiple></select></label>
+      </div>
+      <div class="rule-mode-fields mode-rows" hidden>
+        <label>Baris yang dikecualikan<select class="rule-row-select" multiple></select></label>
+        <p class="rule-help">Nomor baris mengikuti urutan data setelah header pada spreadsheet.</p>
+      </div>
+      <div class="rule-mode-fields mode-column" hidden>
+        <label>Kolom yang disembunyikan<select class="rule-column-select"></select></label>
+        <p class="rule-help">Kolom akan hilang dari tabel, ringkasan, dan grafik dashboard.</p>
+      </div>
+    </article>
+  </template>
+
+  {% if config.get("connection_error") %}
+
+  <div id="connectionErrorModal" class="connection-modal">
+
+      <div class="connection-box">
+
+          <div class="connection-icon">
+              ⚠️
+          </div>
+
+          <h2>Koneksi Bermasalah</h2>
+
+          <p>
+              {{ config.get("connection_error") }}
+          </p>
+
+          <button
+              type="button"
+              onclick="closeConnectionError()"
+          >
+              Mengerti
+          </button>
+
+      </div>
+
+  </div>
+
+  {% endif %}
+  
+  <script
+    src="{{ url_for('static', filename='js/connection-error.js') }}"></script>
+  <script id="headers-data" type="application/json">{{ config.headers|tojson }}</script>
+  <script id="rows-data" type="application/json">{{ config.data|tojson }}</script>
+  <script src="https://cdn.jsdelivr.net/npm/tom-select/dist/js/tom-select.complete.min.js"></script>
+  <script src="{{ url_for('static', filename='js/builder.js') }}"></script>
+</body>
+</html>
